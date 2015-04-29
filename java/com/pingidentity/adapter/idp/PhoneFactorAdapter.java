@@ -17,8 +17,6 @@ import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.phonefactor.pfsdk.PFException;
-
 import org.apache.commons.collections.MapUtils;
 import org.apache.log4j.Logger;
 import org.sourceid.common.ResponseTemplateRenderer;
@@ -49,6 +47,9 @@ import com.pingidentity.sdk.IdpAuthenticationAdapterV2;
 import com.pingidentity.sdk.AuthnAdapterResponse.AUTHN_STATUS;
 
 //Dependent Classes
+import net.phonefactor.pfsdk.PFException;
+import com.pingidentity.adapter.idp.util.*;
+
 
 /**
  * <p>
@@ -116,6 +117,7 @@ public class PhoneFactorAdapter implements IdpAuthenticationAdapterV2 {
         
         TextFieldDescriptor certificatePasswordField = new TextFieldDescriptor("Certificate Password", "The password for the Certificate supplied with your PhoneFactor deployment.");
         guiDescriptor.addAdvancedField(certificatePasswordField);
+
 
         //Template Handling
         TextFieldDescriptor loginTemplateName = new TextFieldDescriptor(FIELD_LOGIN_TEMPLATE_NAME, DESC_LOGIN_TEMPLATE_NAME);
