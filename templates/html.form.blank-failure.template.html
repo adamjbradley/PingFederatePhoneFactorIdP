@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+#*
+The server renders this HTML page in an end-user's browser when:
+
+1) the user submits the HTML login page, the server returns a code
+indicating the user must change their password, and the admin has
+configured the HTML form adapter to manage passwords through a
+password management system (pwm), or
+2) the user submits the change password HTML login page and the
+password change is successful.
+
+Velocity variables (identified by the $ character) are generated
+at runtime by the server.
+
+Change text or formatting as needed. Modifying Velocity statements
+is not recommended as it may interfere with expected server behavior.
+*#
+
+<!-- template name: html.form.message.template.html -->
+
+#set( $messageKeyPrefix = "html.form.message.template." )
+
+<html lang="$locale.getLanguage()" dir="ltr">
+<head>
+    <title>$templateMessages.getMessage($messageKeyPrefix, "title")</title>
+    <base href="$PingFedBaseURL"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <link rel="stylesheet" media="all" type="text/css" href="assets/css/main.css"/>
+</head>
+<body>
+<div class="ping-container">
+    <div class="ping-header">
+        $templateMessages.getMessage($messageKeyPrefix, "title")
+    </div>
+    <div class="ping-body-container">
+        <div>
+            <div class="ping-messages">
+                <div>
+                    $templateMessages.getMessage($messageKeyPrefix, $headerMessage)
+                </div>
+
+                #if($authnMessageKey)
+                    <div class="ping-error">
+                        $templateMessages.getMessage($authnMessageKey)
+                    </div>
+                #end
+            </div>
+            <div class="ping-buttons">
+                <a href="$redirectUrl" class="ping-button normal">
+                    $templateMessages.getMessage($messageKeyPrefix, $linkText)
+                </a>
+            </div>
+        </div><!-- .ping-body -->
+    </div><!-- .ping-body-container -->
+    <div class="ping-footer-container">
+        <div class="ping-footer-container">
+            <div class="ping-footer">
+                <div class="ping-credits">
+                    <a href="http://www.pingidentity.com">PingIdentity</a>
+                </div>
+            </div> <!-- .ping-footer -->
+        </div> <!-- .ping-footer-container -->
+    </div> <!-- .ping-footer-container -->
+</div><!-- .ping-container -->
+</body>
+</html>
+

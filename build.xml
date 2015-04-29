@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project basedir="." default="help" name="pf-sdk">
+
+    <property file="build.local.properties"/>
+    <property file="build.properties"/>
+
+    <patternset id="jars.patternset">
+        <include name="*.jar"/>
+    </patternset>
+
+    <path id="pf.classpath">
+        <fileset dir="${pingfederate.server.lib.dir}">
+          <patternset refid="jars.patternset"/>
+        </fileset>
+        <fileset dir="${pingfederate.lib.dir}">
+          <patternset refid="jars.patternset"/>
+        </fileset>
+        <fileset dir="${pingfederate.sdk.lib.dir}">
+          <filename name="${pingfederate.servlet.jar.name}"/>
+        </fileset>
+        <fileset dir="${lib.dir}">
+          <patternset refid="jars.patternset"/>
+        </fileset>
+    </path>
+
+    <path id="tasks.classpath">
+        <path refid="pf.classpath"/>
+        <fileset dir="${lib.dir}">
+            <patternset refid="jars.patternset"/>
+        </fileset>
+    </path>
+    
+    <path id="plugin.compile.classpath">
+        <path refid="pf.classpath"/>
+        <fileset dir="${target-plugin.dir}" defaultexcludes="true">
+            <patternset includes="lib/*.jar"/>
+        </fileset>
+    </path>
+
+    <path id="services.compile.classpath">
+        <path refid="pf.classpath"/>
+        <fileset dir="${svcs-src.dir}" defaultexcludes="true">
+            <patternset includes="lib/*.jar"/>
+        </fileset>
+    </path>
+    
+	<!--
+    <target name="-plugin-init">
+        <taskdef classname="com.pingidentity.anttask.CheckTargetAdapterName" name="check-setup">
+            <classpath refid="tasks.classpath"/>
+        </taskdef>
+        <check-setup targetPropName="target-plugin.name" rootSrc="" classpathref="plugin.compile.classpath"/>
+    </target>
+
+    <target name="compile-plugin" depends="-plugin-init" >
+           <mkdir dir="${target-plugin.build.classes.dir}" />
+           <javac classpathref="plugin.compile.classpath"
+                  destdir="${target-plugin.build.classes.dir}"
+                  srcdir="${target-plugin.dir}/java"
+                  debug="${javac.debug}"
+                  deprecation="${javac.deprecation}"
+                  includeAntRuntime="false"
+                  fork="true" />
+    </target>
+	-->
+	
+    <target name="compile-plugin" >
+           <mkdir dir="${target-plugin.build.classes.dir}" />
+           <javac classpathref="plugin.compile.classpath"
+                  destdir="${target-plugin.build.classes.dir}"
+                  srcdir="java"
+                  debug="${javac.debug}"
+                  deprecation="${javac.deprecation}"
+                  includeAntRuntime="false"
+                  fork="true" />
+    </target>
+
+    <target name="jar-plugin" depends="compile-plugin" description="Package the plugin jar" >
+        <taskdef classname="com.pingidentity.anttask.BuildSdkDeploymentDesc" name="build-pf-desc">
+            <classpath refid="tasks.classpath"/>
+        </taskdef>
+        <build-pf-desc classesDir="${target-plugin.build.classes.dir}" classpathRef="plugin.compile.classpath"/>
+        <mkdir dir="${target-plugin.build.jar.dir}" />
+        <jar destfile="${target-plugin.build.jar.dir}/${target-plugin.build.jar.name}">
+            <fileset dir="${target-plugin.build.classes.dir}"/>
+        </jar>
+    </target>
+
+    <target name="deploy-plugin" depends="jar-plugin" description="Deploy the plugin jar and libs to PingFederate">
+        <copy todir="${pingfederate.deploy.dir}" flatten="true" >
+            <fileset dir="${target-plugin.build.jar.dir}"/>
+            <fileset dir="${target-plugin.dir}" defaultexcludes="true">
+                <patternset includes="lib/*.jar"/>
+            </fileset>
+        </copy>
+        <copy todir="${pingfederate.conf.dir}" failonerror="false">
+            <fileset dir="${target-plugin.conf.dir}"/>
+        </copy>
+    </target>
+
+    <target name="clean-plugin" description="Clean the plugin build directory">
+        <delete dir="${target-plugin.build.dir}"/>
+    </target>
+    
+    <target name="compile-services">
+        <mkdir dir="${svcs.build.classes.dir}"/>
+        <javac classpathref="services.compile.classpath"
+                  destdir="${svcs.build.classes.dir}"
+                  srcdir="${svcs-src.dir}/java"
+                  debug="${javac.debug}"
+                  deprecation="${javac.deprecation}"
+                  includeAntRuntime="false"
+                  fork="true"/>
+    </target>
+
+    <target name="jar-services" depends="compile-services">
+        <mkdir dir="${svcs.build.jar.dir}"/>
+        <jar destfile="${svcs.build.jar.dir}/${svcs.jar.name}">
+            <fileset dir="${svcs.build.classes.dir}"/>
+        </jar>
+    </target>
+
+    <target name="clean-services">
+        <delete dir="${svcs.build.dir}"/>
+    </target>
+
+    <target name="deploy-services" depends="jar-services">
+        <copy todir="${pingfederate.server.lib.dir}" flatten="true">
+            <fileset dir="${svcs.build.jar.dir}"/>
+            <fileset dir="${svcs-src.dir}" defaultexcludes="true">
+                <patternset includes="lib/*.jar"/>
+            </fileset>
+        </copy>
+    </target>
+	
+	<target name="help">
+	  <java classname="org.apache.tools.ant.Main">
+	    <arg value="-projecthelp"/>
+	    <classpath>
+	      <fileset dir="${ant.library.dir}">
+	        <include name="**/*.jar"/>
+	      </fileset>
+	    </classpath>
+	   </java> 
+	</target>
+		
+</project>
