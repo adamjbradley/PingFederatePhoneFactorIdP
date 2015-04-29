@@ -113,11 +113,10 @@ public class PhoneFactorAdapter implements IdpAuthenticationAdapterV2 {
 
         //Configuration File Settings location
         TextFieldDescriptor baseFileLocationField = new TextFieldDescriptor("Configuration File Location", "The directory location for configuration files.");
-        guiDescriptor.addAdvancedField(baseFileLocationField);
+        guiDescriptor.addField(baseFileLocationField);
         
         TextFieldDescriptor certificatePasswordField = new TextFieldDescriptor("Certificate Password", "The password for the Certificate supplied with your PhoneFactor deployment.");
-        guiDescriptor.addAdvancedField(certificatePasswordField);
-
+        guiDescriptor.addField(certificatePasswordField);
 
         //Template Handling
         TextFieldDescriptor loginTemplateName = new TextFieldDescriptor(FIELD_LOGIN_TEMPLATE_NAME, DESC_LOGIN_TEMPLATE_NAME);
@@ -135,13 +134,13 @@ public class PhoneFactorAdapter implements IdpAuthenticationAdapterV2 {
         guiDescriptor.addAdvancedField(ldapDatastoreFieldDescriptor);
                 
         TextFieldDescriptor baseDomainField = new TextFieldDescriptor("Base Domain", "The base domain for attribute retrieval.");
-        guiDescriptor.addAdvancedField(baseDomainField);
+        guiDescriptor.addField(baseDomainField);
         
         TextFieldDescriptor ldapFilterField = new TextFieldDescriptor("Filter", "The filter for attribute retrieval. ${username} may be used to refer to the subject. Example: userPrincipalName=${username}");
-        guiDescriptor.addAdvancedField(ldapFilterField);
+        guiDescriptor.addField(ldapFilterField);
         
         TextFieldDescriptor attributeField = new TextFieldDescriptor("Attribute", "The LDAP attributes to return.");
-        guiDescriptor.addAdvancedField(attributeField);
+        guiDescriptor.addField(attributeField);
                         
         //Other
         Set<String> attrNames = new HashSet<String>();
@@ -259,9 +258,7 @@ public class PhoneFactorAdapter implements IdpAuthenticationAdapterV2 {
             debug_message("First call");
 
             setRequestToken(req);
-            
-            
-
+                      
             //Lookup LDAP
         	List<String>attributes = new ArrayList<String>();
         	attributes.add(properties.getProperty("attribute"));
@@ -271,8 +268,7 @@ public class PhoneFactorAdapter implements IdpAuthenticationAdapterV2 {
 			log.debug("Searching for " + userName + " with filter " + filter); 
 			if (result.size() == 1) {												
 				log.debug("Result of LDAP call " + result.get(0));
-				
-				
+							
 				// Set the authentication response
 		        try {		        	
 		        	log.debug("Attempting to call PFUtility");
@@ -281,17 +277,22 @@ public class PhoneFactorAdapter implements IdpAuthenticationAdapterV2 {
 	    			if (PFUtility.Call(userName, number.country, number.mobile))
 					{
 			        	log.info("Success!");
-					    authnAdapterResponse.setAuthnStatus(AUTHN_STATUS.SUCCESS);
+			            req.getSession().setAttribute("success", "true");				
+
+					    //authnAdapterResponse.setAuthnStatus(AUTHN_STATUS.SUCCESS);
 					}
 					else
 					{
 			        	log.info("Failure!");				        
-					    authnAdapterResponse.setAuthnStatus(AUTHN_STATUS.FAILURE);
+			            req.getSession().setAttribute("success", "false");				
+
+					    //authnAdapterResponse.setAuthnStatus(AUTHN_STATUS.FAILURE);
 					}					
 				} catch (PFException e) {
 		        	log.info("Failure! "+ e.toString());
+		            req.getSession().setAttribute("success", "false");				
 
-				    authnAdapterResponse.setAuthnStatus(AUTHN_STATUS.FAILURE);
+				    //authnAdapterResponse.setAuthnStatus(AUTHN_STATUS.FAILURE);
 				}										
 			}
 			else
