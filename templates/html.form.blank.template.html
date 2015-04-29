@@ -22,7 +22,7 @@ is not recommended as it may interfere with expected server behavior.
 
 <html lang="$locale.getLanguage()" dir="ltr">
 <head>
-    <title>$templateMessages.getMessage($messageKeyPrefix, "title")</title>
+    <title>PhoneFactor Request</title>
     <base href="$PingFedBaseURL"/>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
@@ -31,31 +31,16 @@ is not recommended as it may interfere with expected server behavior.
 <body>
 <script type="text/javascript">
     setTimeout(function() {
-        window.location.reload(true);
-    }, 5000);
+        window.location.reload(1);
+    }, 1000);
 </script>
 <div class="ping-container">
     <div class="ping-header">
-        $templateMessages.getMessage($messageKeyPrefix, "title")
+        Processing PhoneFactor request
     </div>
     <div class="ping-body-container">
         <div>
-            <div class="ping-messages">
-                <div>
-                    $templateMessages.getMessage($messageKeyPrefix, $headerMessage)
-                </div>
-
-                #if($authnMessageKey)
-                    <div class="ping-error">
-                        $templateMessages.getMessage($authnMessageKey)
-                    </div>
-                #end
-            </div>
-            <div class="ping-buttons">
-                <a href="$redirectUrl" class="ping-button normal">
-                    $templateMessages.getMessage($messageKeyPrefix, $linkText)
-                </a>
-            </div>
+            Sending PhoneFactor request to your phone
         </div><!-- .ping-body -->
     </div><!-- .ping-body-container -->
     <div class="ping-footer-container">
