@@ -256,7 +256,7 @@ public class PhoneFactorAdapter implements IdpAuthenticationAdapterV2 {
                 responseTemplate = null;
                 authnAdapterResponse.setAuthnStatus(AuthnAdapterResponse.AUTHN_STATUS.SUCCESS);
             } else {
-            	responseTemplate = htmlFailureTemplate;
+            	//responseTemplate = htmlFailureTemplate;
                 authnAdapterResponse.setAuthnStatus(AuthnAdapterResponse.AUTHN_STATUS.FAILURE);
             }
         } else {
@@ -264,7 +264,7 @@ public class PhoneFactorAdapter implements IdpAuthenticationAdapterV2 {
 
             setRequestToken(req);
 
-            //Initialise PingFederate
+            //Initialise PhoneFactor
         	PFUtility pfu = new PFUtility(properties.getProperty("configurationFileLocation"), properties.getProperty("certificatePassword"));
 
             //Lookup LDAP
