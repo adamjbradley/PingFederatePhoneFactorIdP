@@ -61,7 +61,7 @@ import com.pingidentity.adapter.idp.util.*;
  */
 public class PhoneFactorAdapter implements IdpAuthenticationAdapterV2 {
 
-    private static final String ADAPTER_NAME = "Template Adapter";
+    private static final String ADAPTER_NAME = "PhoneFactor Adapter";
 	private static final String ADAPTER_VERSION = "1.2";
     private final Logger log = Logger.getLogger(this.getClass());
     
