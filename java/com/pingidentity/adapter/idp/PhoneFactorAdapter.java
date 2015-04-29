@@ -202,7 +202,7 @@ public class PhoneFactorAdapter implements IdpAuthenticationAdapterV2 {
                 IN_PARAMETER_NAME_CHAINED_ATTRIBUTES);        
         
         if (MapUtils.isNotEmpty(chainedAttributes)) {
-            log.info("chainedAttributes");
+            log.info("ChainedAttributes:");
             for (Map.Entry<String, AttributeValue> e : chainedAttributes.entrySet()) {
                 StringBuffer sb = new StringBuffer();
                 sb.append(" " + e.getKey());
@@ -212,7 +212,7 @@ public class PhoneFactorAdapter implements IdpAuthenticationAdapterV2 {
             }
         }
 
-        log.info("inParameters:");
+        log.info("InParameters:");
         for (Map.Entry<String, Object> e : inParameters.entrySet()) {
             StringBuffer sb = new StringBuffer();
             sb.append(" " + e.getKey());
@@ -221,12 +221,12 @@ public class PhoneFactorAdapter implements IdpAuthenticationAdapterV2 {
             log.info(sb.toString());
         }
         
-        log.info("request Parameters:");
+        log.info("Request Parameters:");
         for (Map.Entry<String, String[]> reqParam : req.getParameterMap().entrySet()) {
             log.info(" " + reqParam.getKey() + " : " + reqParam.getValue()[0].toString());
         }
 
-        // make sure we're in an interactive session
+        // Make sure we're in an interactive session
         AuthnPolicy authnPolicy = (AuthnPolicy) inParameters.get(IN_PARAMETER_NAME_AUTHN_POLICY);
         if (!authnPolicy.allowUserInteraction()) {
             if(allowNonInteractive) {
@@ -251,11 +251,11 @@ public class PhoneFactorAdapter implements IdpAuthenticationAdapterV2 {
         //Initialise PhoneFactor
     	PFUtility pfu = new PFUtility(properties.getProperty("configurationFileLocation"), properties.getProperty("certificatePassword"));
 
-        // Validate postback
+        // Validate Postback
         if (requestToken != null) {
             debug_message("Session requestToken = " + requestToken);
             
-            // success is the ultimate result of second-factor authentication
+            // Success is the ultimate result of second-factor authentication
             if(req.getSession().getAttribute("success").equals("true")) {
                 responseTemplate = null;
                 authnAdapterResponse.setAuthnStatus(AuthnAdapterResponse.AUTHN_STATUS.SUCCESS);
@@ -287,21 +287,15 @@ public class PhoneFactorAdapter implements IdpAuthenticationAdapterV2 {
     					{
     			        	log.info("Success!");
     			            req.getSession().setAttribute("success", "true");				
-
-    					    //authnAdapterResponse.setAuthnStatus(AUTHN_STATUS.SUCCESS);
     					}
     					else
     					{
     			        	log.info("Failure!");				        
     			            req.getSession().setAttribute("success", "false");				
-
-    					    //authnAdapterResponse.setAuthnStatus(AUTHN_STATUS.FAILURE);
     					}					
     				} catch (PFException e) {
     		        	log.info("Failure! "+ e.toString());
     		            req.getSession().setAttribute("success", "false");				
-
-    				    //authnAdapterResponse.setAuthnStatus(AUTHN_STATUS.FAILURE);
     				}										
     			}
     			else
