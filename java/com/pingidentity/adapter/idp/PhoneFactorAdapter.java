@@ -246,19 +246,20 @@ public class PhoneFactorAdapter implements IdpAuthenticationAdapterV2 {
         responseParams.put("url", resumePath);
 
         String requestToken = (String)req.getSession().getAttribute(REQUEST_TOKEN_SESSION_KEY);
+        req.getSession().setAttribute("success","");
+
+        // Validate postback
         if (requestToken != null) {
-            // Validate postback
             debug_message("Session requestToken = " + requestToken);
-            req.getSession().removeAttribute(REQUEST_TOKEN_SESSION_KEY);
             
             // success is the ultimate result of second-factor authentication
             if(req.getSession().getAttribute("success").equals("true")) {
                 responseTemplate = null;
                 authnAdapterResponse.setAuthnStatus(AuthnAdapterResponse.AUTHN_STATUS.SUCCESS);
-            } else {
+            } else if(req.getSession().getAttribute("success").equals("false")) {                
             	responseTemplate = htmlFailureTemplate;
                 authnAdapterResponse.setAuthnStatus(AuthnAdapterResponse.AUTHN_STATUS.FAILURE);
-            }
+            }            
         } else {
             debug_message("First call");
 
