@@ -245,8 +245,8 @@ public class PhoneFactorAdapter implements IdpAuthenticationAdapterV2 {
         Map<String, Object> responseParams = new HashMap<String, Object>();
         responseParams.put("url", resumePath);
 
+        //Session Management
         String requestToken = (String)req.getSession().getAttribute(REQUEST_TOKEN_SESSION_KEY);
-        req.getSession().setAttribute("success","");
 
         // Validate postback
         if (requestToken != null) {
@@ -260,6 +260,9 @@ public class PhoneFactorAdapter implements IdpAuthenticationAdapterV2 {
             	responseTemplate = htmlFailureTemplate;
                 authnAdapterResponse.setAuthnStatus(AuthnAdapterResponse.AUTHN_STATUS.FAILURE);
             }            
+            else {
+            	
+            }
         } else {
             debug_message("First call");
 
