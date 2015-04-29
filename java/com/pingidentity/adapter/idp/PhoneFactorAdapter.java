@@ -46,8 +46,10 @@ import com.pingidentity.sdk.AuthnAdapterResponse;
 import com.pingidentity.sdk.IdpAuthenticationAdapterV2;
 import com.pingidentity.sdk.AuthnAdapterResponse.AUTHN_STATUS;
 
+
 //Dependent Classes
 import net.phonefactor.pfsdk.PFException;
+
 import com.pingidentity.adapter.idp.util.*;
 
 
@@ -163,7 +165,10 @@ public class PhoneFactorAdapter implements IdpAuthenticationAdapterV2 {
 
         htmlTemplate = configuration.getFieldValue(FIELD_LOGIN_TEMPLATE_NAME);
         htmlFailureTemplate = configuration.getFieldValue(FIELD_FAILURE_TEMPLATE_NAME);
-        
+
+		properties.setProperty("configurationFileLocation", configuration.getFieldValue("Configuration File Location"));
+		properties.setProperty("certificatePassword", configuration.getFieldValue("Certificate Password"));
+
 		properties.setProperty("host", configuration.getFieldValue("LDAP Data source"));
 		properties.setProperty("baseDN",configuration.getFieldValue("Base Domain"));
 		properties.setProperty("filter",configuration.getFieldValue("Filter"));
@@ -251,14 +256,17 @@ public class PhoneFactorAdapter implements IdpAuthenticationAdapterV2 {
                 responseTemplate = null;
                 authnAdapterResponse.setAuthnStatus(AuthnAdapterResponse.AUTHN_STATUS.SUCCESS);
             } else {
-        	responseTemplate = htmlFailureTemplate;
+            	responseTemplate = htmlFailureTemplate;
                 authnAdapterResponse.setAuthnStatus(AuthnAdapterResponse.AUTHN_STATUS.FAILURE);
             }
         } else {
             debug_message("First call");
 
             setRequestToken(req);
-                      
+
+            //Initialise PingFederate
+        	PFUtility pfu = new PFUtility(properties.getProperty("configurationFileLocation"), properties.getProperty("certificatePassword"));
+
             //Lookup LDAP
         	List<String>attributes = new ArrayList<String>();
         	attributes.add(properties.getProperty("attribute"));
@@ -273,7 +281,7 @@ public class PhoneFactorAdapter implements IdpAuthenticationAdapterV2 {
 		        try {		        	
 		        	log.debug("Attempting to call PFUtility");
 		        	PhoneNumber number = new PhoneNumber(result.get(0));
-		        			        			       
+		        			        			    
 	    			if (PFUtility.Call(userName, number.country, number.mobile))
 					{
 			        	log.info("Success!");

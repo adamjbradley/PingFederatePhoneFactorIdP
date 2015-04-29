@@ -38,7 +38,7 @@ public class TestHarness {
 	@Test
 	public void PhoneFactor() {
 		try {
-			PFUtility pfu = new PFUtility("c:\\pf\\", "RIVHJIMDZAJZCSA5");
+			PFUtility pfu = new PFUtility("c:/pf/", "RIVHJIMDZAJZCSA5");
 			PhoneNumber number = new PhoneNumber("+61406680548");
 			if (PFUtility.Call("user1-1@idc05.onmicrosoft.com", number.country, number.mobile))
 			{
