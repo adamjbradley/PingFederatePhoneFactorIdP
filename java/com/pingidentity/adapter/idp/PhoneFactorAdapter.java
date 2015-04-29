@@ -256,7 +256,7 @@ public class PhoneFactorAdapter implements IdpAuthenticationAdapterV2 {
                 responseTemplate = null;
                 authnAdapterResponse.setAuthnStatus(AuthnAdapterResponse.AUTHN_STATUS.SUCCESS);
             } else {
-            	//responseTemplate = htmlFailureTemplate;
+            	responseTemplate = htmlFailureTemplate;
                 authnAdapterResponse.setAuthnStatus(AuthnAdapterResponse.AUTHN_STATUS.FAILURE);
             }
         } else {
