@@ -247,6 +247,10 @@ public class PhoneFactorAdapter implements IdpAuthenticationAdapterV2 {
 
         //Session Management
         String requestToken = (String)req.getSession().getAttribute(REQUEST_TOKEN_SESSION_KEY);
+        String state = (String)req.getSession().getAttribute("state");
+        
+        if (state == null)
+        	req.getSession().setAttribute("state","firstrun");
 
         //Initialise PhoneFactor
     	PFUtility pfu = new PFUtility(properties.getProperty("configurationFileLocation"), properties.getProperty("certificatePassword"));
@@ -268,41 +272,48 @@ public class PhoneFactorAdapter implements IdpAuthenticationAdapterV2 {
                 debug_message("Failure!");
             }            
             else {
-                //Lookup LDAP
-            	List<String>attributes = new ArrayList<String>();
-            	attributes.add(properties.getProperty("attribute"));
-            	String filter = properties.getProperty("filter").replace("${username}", userName);
-    			List<String>result = ldapQuery.getAttributes(properties.getProperty("baseDN"), filter, attributes);
-    			
-    			log.debug("Searching for " + userName + " with filter " + filter); 
-    			if (result.size() == 1) {												
-    				log.debug("Result of LDAP call " + result.get(0));
-    							
-    				// Set the authentication response
-    		        try {		        	
-    		        	log.debug("Attempting to call PFUtility");
-    		        	PhoneNumber number = new PhoneNumber(result.get(0));
-    		        			        			    
-    	    			if (PFUtility.Call(userName, number.country, number.mobile))
-    					{
-    			        	log.info("Success!");
-    			            req.getSession().setAttribute("success", "true");				
-    					}
-    					else
-    					{
-    			        	log.info("Failure!");				        
-    			            req.getSession().setAttribute("success", "false");				
-    					}					
-    				} catch (PFException e) {
-    		        	log.info("Failure! "+ e.toString());
-    		            req.getSession().setAttribute("success", "false");				
-    				}										
-    			}
-    			else
-    			{
-    				log.debug("No results found for the user " + userName);
-    	            req.getSession().setAttribute("success", "false");				
-    			}                			             
+            	
+            	if (!req.getSession().getAttribute("state").equals("processing")) 
+            	{
+	                //Lookup LDAP
+	            	List<String>attributes = new ArrayList<String>();
+	            	attributes.add(properties.getProperty("attribute"));
+	            	String filter = properties.getProperty("filter").replace("${username}", userName);
+	    			List<String>result = ldapQuery.getAttributes(properties.getProperty("baseDN"), filter, attributes);
+	    			
+	    			log.debug("Searching for " + userName + " with filter " + filter); 
+	    			if (result.size() == 1) {												
+	    				log.debug("Result of LDAP call " + result.get(0));
+	    							
+	    				// Set the authentication response
+	    		        try {		        	
+	    		        	log.debug("Attempting to call PFUtility");
+	    		        	PhoneNumber number = new PhoneNumber(result.get(0));
+	    		        			        		
+	    		        	req.getSession().setAttribute("state","processing");
+	    	    			if (PFUtility.Call(userName, number.country, number.mobile))
+	    					{
+	    			        	log.info("Success!");
+	    			            req.getSession().setAttribute("success", "true");
+	    			            req.getSession().setAttribute("state", "complete");
+	    					}
+	    					else
+	    					{
+	    			        	log.info("Failure!");				        
+	    			            req.getSession().setAttribute("success", "false");
+	    			            req.getSession().setAttribute("state", "complete");
+	    					}					
+	    				} catch (PFException e) {
+	    		        	log.info("Failure! "+ e.toString());
+	    		            req.getSession().setAttribute("success", "false");				
+	    				}										
+	    			}
+	    			else
+	    			{
+	    				log.debug("No results found for the user " + userName);
+	    	            req.getSession().setAttribute("success", "false");				
+	    			}                			             
+            	}
             }
         } else {
             debug_message("First call");
